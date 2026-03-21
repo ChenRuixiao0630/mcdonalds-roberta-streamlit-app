@@ -1,27 +1,25 @@
-# McDonald's Review Sentiment Analysis App
+# McDonald's Review Analysis App
 
-This project is Pipeline 1 of our ISOM5240 project.
+This Streamlit app implements both Pipeline 1 and Pipeline 2 of our ISOM5240 project.
 
-We fine-tuned a RoBERTa model on McDonald's customer reviews to classify sentiment into three categories:
+## Pipelines
 
-- negative
-- neutral
-- positive
+1. **Sentiment Analysis (Pipeline 1)**  
+   - Model: ChenRuixiao/mcdonalds-roberta-sentiment  
+   - Output: Negative / Neutral / Positive sentiment
 
-## Final Model
-We compared multiple fine-tuned transformer models and selected RoBERTa-base as the final model because it achieved the best trade-off between accuracy and runtime.
+2. **Star Rating Prediction (Pipeline 2)**  
+   - Model: ChenRuixiao/bert_base_mcd_star_model  
+   - Output: 1–5 star rating with suggestions
 
 ## Files
-- `app.py` - Streamlit web app
-- `inference.py` - model inference logic
-- `requirements.txt` - dependencies for deployment
-- `README.md` - project description
 
-## Model Source
-The final fine-tuned model is hosted on Hugging Face Hub:
-`ChenRuixiao/mcdonalds-roberta-sentiment`
+- `app.py` - Streamlit web app  
+- `inference.py` - Model inference logic for both pipelines  
+- `requirements.txt` - Python dependencies  
+- `README.md` - Project description
 
-## How to Run Locally
+## Usage
 
 ```bash
 pip install -r requirements.txt
