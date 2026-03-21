@@ -1,70 +1,58 @@
 import streamlit as st
-from inference import predict_sentiment
+from inference import predict_sentiment, predict_star
 
 st.set_page_config(
-    page_title="McDonald's Review Sentiment Analysis",
+    page_title="McDonald's Review Analysis",
     page_icon="🍔",
     layout="centered"
 )
 
-st.title("🍔 McDonald's Review Sentiment Analysis")
-st.write(
-    "Enter a customer review and the fine-tuned RoBERTa model will predict "
-    "whether the sentiment is negative, neutral, or positive."
-)
-
-st.markdown("### Try an example")
-example_reviews = {
-    "Negative example": "The fries were cold and the service was very slow.",
-    "Neutral example": "The food was okay, nothing special.",
-    "Positive example": "Great burger and very friendly staff."
-}
-
-selected_example = st.selectbox(
-    "Choose an example review or type your own below:",
-    options=["None"] + list(example_reviews.keys())
-)
-
-default_text = ""
-if selected_example != "None":
-    default_text = example_reviews[selected_example]
+st.title("🍔 McDonald's Review Analyzer")
+st.write("Enter a customer review and choose an analysis type:")
 
 user_input = st.text_area(
     "Enter a review:",
-    value=default_text,
     height=160,
-    placeholder="Example: The fries were cold and the service was very slow."
+    placeholder="Type your review here..."
 )
 
-if st.button("Analyze Sentiment"):
-    if user_input.strip():
-        result = predict_sentiment(user_input)
+col1, col2 = st.columns(2)
 
-        st.subheader("Prediction")
-        predicted_label = result["predicted_label"]
+with col1:
+    if st.button("Analyze Sentiment"):
+        if user_input.strip():
+            result = predict_sentiment(user_input)
+            st.subheader("Sentiment Analysis Result")
+            pred = result["predicted_label"]
+            if pred == "negative":
+                st.error(pred)
+            elif pred == "neutral":
+                st.warning(pred)
+            else:
+                st.success(pred)
 
-        if predicted_label == "negative":
-            st.error(f"Predicted sentiment: {predicted_label}")
-        elif predicted_label == "neutral":
-            st.warning(f"Predicted sentiment: {predicted_label}")
+            st.subheader("Class Probabilities")
+            for k,v in result["probabilities"].items():
+                st.write(f"{k}: {v}")
+                st.progress(v)
+            st.caption(f"Running on device: {result['device']}")
         else:
-            st.success(f"Predicted sentiment: {predicted_label}")
+            st.warning("Please enter a review first.")
 
-        st.subheader("Class Probabilities")
-        probs = result["probabilities"]
+with col2:
+    if st.button("Predict Star Rating"):
+        if user_input.strip():
+            result = predict_star(user_input)
+            st.subheader("Star Rating Result")
+            st.success(f"{result['predicted_star']} - {result['suggestion']}")
 
-        st.write(f"**Negative:** {probs['negative']}")
-        st.progress(float(probs["negative"]))
-
-        st.write(f"**Neutral:** {probs['neutral']}")
-        st.progress(float(probs["neutral"]))
-
-        st.write(f"**Positive:** {probs['positive']}")
-        st.progress(float(probs["positive"]))
-
-        st.caption(f"Running on device: {result['device']}")
-    else:
-        st.warning("Please enter a review first.")
+            st.subheader("Class Probabilities")
+            for k,v in result["probabilities"].items():
+                st.write(f"{k}: {v}")
+                st.progress(v)
+            st.caption(f"Running on device: {result['device']}")
+        else:
+            st.warning("Please enter a review first.")
 
 st.markdown("---")
-st.caption("Pipeline 1 - Fine-tuned RoBERTa model for McDonald's review sentiment analysis")
+st.caption("Pipeline 1 & 2 - Sentiment analysis and star rating prediction for McDonald's reviews")
